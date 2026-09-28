@@ -6,10 +6,30 @@ Hierarchical ASIC Implementation and Sign-off of a 2x2 Systolic Array architectu
 
 ## 🖼️ Physical Layouts
 
-| Processing Element (Hard Macro) | 2x2 Systolic Array (Top Level) |
-| :---: | :---: |
-| ![PE Macro Layout](images/layout_macro.png) | ![Top Level Layout](images/layout_top.png) |
-| **PE Hard Macro** ($240 \times 240\ \mu\text{m}$) | **Top-Level Array** ($650 \times 650\ \mu\text{m}$) |
+<div align="center">
+  <table width="100%">
+    <thead>
+      <tr>
+        <th align="center" width="50%">Processing Element (Hard Macro)</th>
+        <th align="center" width="50%">2x2 Systolic Array (Top Level)</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td align="center" valign="middle" width="50%">
+          <img src="images/layout_macro.png" alt="PE Macro Layout" width="96%" />
+        </td>
+        <td align="center" valign="middle" width="50%">
+          <img src="images/layout_top.png" alt="Top Level Layout" width="96%" />
+        </td>
+      </tr>
+      <tr>
+        <td align="center"><b>PE Hard Macro</b> (240 &times; 240 &mu;m)</td>
+        <td align="center"><b>Top-Level Array</b> (650 &times; 650 &mu;m)</td>
+      </tr>
+    </tbody>
+  </table>
+</div>
 
 ---
 
