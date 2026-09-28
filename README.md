@@ -1,9 +1,17 @@
-cat << 'EOF' > README.md
 # Hierarchical Physical Design of 2x2 Systolic Array (SkyWater 130nm)
 
 Hierarchical ASIC Implementation and Sign-off of a 2x2 Systolic Array architecture targeting the open-source **SkyWater 130nm (sky130_fd_sc_hd)** PDK via the **OpenLane / OpenROAD** EDA flow.
 
-![Systolic Array Top Layout](images/layout_top.png)
+---
+
+## 🖼️ Physical Layouts
+
+| Processing Element (Hard Macro) | 2x2 Systolic Array (Top Level) |
+| :---: | :---: |
+| ![PE Macro Layout](images/layout_macro.png) | ![Top Level Layout](images/layout_top.png) |
+| **PE Hard Macro** ($240 \times 240\ \mu\text{m}$) | **Top-Level Array** ($650 \times 650\ \mu\text{m}$) |
+
+---
 
 ## 📌 Architecture & Design Highlights
 - **Architecture**: 2x2 2D Systolic Array with 4 Hard Macros (`processing_element`).
@@ -29,4 +37,3 @@ Hierarchical ASIC Implementation and Sign-off of a 2x2 Systolic Array architectu
 - `tb/`: Verification testbenches (functional matrix multiplication verification).
 - `signoff_deliverables/`: Final tape-out deliverables (GDSII, LEF, DEF, SDC, SDF, SPEF).
 - `images/`: High-resolution layout captures from KLayout.
-EOF
