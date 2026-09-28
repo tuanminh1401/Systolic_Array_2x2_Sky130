@@ -1,0 +1,515 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <title>Mô phỏng Mảng tâm thu WS (Weight-Stationary)</title>
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body {
+            background-color: #050811;
+            color: #ffffff;
+            font-family: 'Consolas', 'Segoe UI', monospace;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .header { text-align: center; margin-bottom: 15px; }
+        .header h1 { font-size: 20px; color: #38bdf8; letter-spacing: 1.5px; margin-bottom: 4px; }
+        .header p { font-size: 13px; color: #94a3b8; }
+
+        .controls { display: flex; gap: 10px; margin-bottom: 20px; align-items: center; }
+        button {
+            background: #1e293b;
+            color: #f8fafc;
+            border: 1px solid #475569;
+            padding: 8px 14px;
+            font-size: 13px;
+            font-weight: bold;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+        button:hover { background: #334155; border-color: #94a3b8; }
+        .btn-mode { background: #0369a1; border-color: #38bdf8; }
+
+        .main-layout {
+            display: flex;
+            gap: 25px;
+            align-items: center;
+        }
+
+        /* Sân khấu mô phỏng */
+        .stage {
+            position: relative;
+            width: 620px;
+            height: 480px;
+            background: #090e1a;
+            border: 1px solid #1e293b;
+            border-radius: 12px;
+            overflow: hidden;
+        }
+
+        /* Bảng ma trận kết quả tích lũy bên phải */
+        .result-panel {
+            background: #090e1a;
+            border: 1px solid #1e293b;
+            border-radius: 12px;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            width: 220px;
+        }
+        .result-title {
+            font-size: 13px;
+            font-weight: bold;
+            color: #4ade80;
+            margin-bottom: 15px;
+            text-align: center;
+        }
+        .result-grid {
+            display: grid;
+            grid-template-columns: 75px 75px;
+            grid-template-rows: 75px 75px;
+            gap: 12px;
+        }
+        .res-box {
+            border: 2px solid #334155;
+            border-radius: 8px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            background: #0f172a;
+            transition: all 0.4s ease;
+        }
+        .res-box.active {
+            border-color: #4ade80;
+            background: rgba(74, 222, 128, 0.15);
+            box-shadow: 0 0 12px rgba(74, 222, 128, 0.3);
+        }
+        .res-label { font-size: 11px; color: #64748b; margin-bottom: 2px; }
+        .res-val { font-size: 20px; font-weight: bold; color: #e2e8f0; }
+        .res-box.active .res-val { color: #4ade80; }
+
+        /* 4 ô PE trung tâm */
+        .pe-grid {
+            position: absolute;
+            top: 130px;
+            left: 215px;
+            display: grid;
+            grid-template-columns: 95px 95px;
+            grid-template-rows: 95px 95px;
+            gap: 15px;
+        }
+        .pe-box {
+            width: 95px;
+            height: 95px;
+            border: 2px solid #38bdf8;
+            border-radius: 8px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            background: rgba(15, 23, 42, 0.85);
+            box-shadow: 0 0 15px rgba(56, 189, 248, 0.15);
+        }
+        .pe-title { font-size: 11px; color: #64748b; margin-bottom: 2px; }
+        .pe-weight { font-size: 18px; font-weight: bold; color: #facc15; }
+        .pe-calc { font-size: 10px; color: #94a3b8; margin-top: 4px; text-align: center; }
+
+        /* Khay hứng ngõ ra phía Nam */
+        .output-tray {
+            position: absolute;
+            bottom: 20px;
+            left: 215px;
+            display: grid;
+            grid-template-columns: 95px 95px;
+            gap: 15px;
+        }
+        .tray-box {
+            width: 95px;
+            height: 48px;
+            border: 2px dashed #4ade80;
+            border-radius: 6px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            background: rgba(74, 222, 128, 0.05);
+        }
+        .tray-title { font-size: 10px; color: #4ade80; }
+        .tray-val { font-size: 14px; font-weight: bold; color: #4ade80; }
+
+        /* Nhãn chỉ hướng */
+        .guide-label { position: absolute; font-size: 11px; font-weight: bold; text-transform: uppercase; }
+        .label-west { left: 12px; top: 110px; color: #c084fc; }
+        .label-north { top: 15px; left: 220px; color: #38bdf8; }
+        .label-south { bottom: 75px; left: 125px; color: #4ade80; }
+
+        /* Token dữ liệu di chuyển */
+        .token {
+            position: absolute;
+            width: 34px;
+            height: 34px;
+            border-radius: 6px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 15px;
+            font-weight: bold;
+            transition: all 0.75s cubic-bezier(0.4, 0, 0.2, 1);
+            z-index: 10;
+        }
+        .token-act { background: #7e22ce; color: #ffffff; border: 1px solid #c084fc; }
+        .token-psum { background: #0369a1; color: #ffffff; border: 1px solid #38bdf8; font-size: 12px; }
+
+        /* Khung thông tin bước chạy */
+        .info-panel {
+            width: 865px;
+            margin-top: 15px;
+            font-size: 13px;
+            line-height: 1.5;
+            color: #cbd5e1;
+            background: #090e1a;
+            border: 1px solid #1e293b;
+            padding: 12px 20px;
+            border-radius: 8px;
+            min-height: 58px;
+        }
+        .hl-green { color: #4ade80; font-weight: bold; }
+    </style>
+</head>
+<body>
+
+    <div class="header">
+        <h1>WEIGHT-STATIONARY SYSTOLIC ARRAY (2x2)</h1>
+        <p>Trọng số W cố định tại PE | Dữ liệu A trôi ngang (Tây → Đông) | Tích lũy Psum rót dọc (Bắc → Nam)</p>
+    </div>
+
+    <div class="controls">
+        <button onclick="stepBackward()">❮ Quay lại (Back)</button>
+        <button onclick="stepForward()">Sườn Clock tiếp theo (Step) ❯</button>
+        <button onclick="toggleAuto()" id="playBtn">Tự động chạy (Play)</button>
+        <button onclick="resetSim()">Làm lại (Reset)</button>
+        <button onclick="toggleMode()" class="btn-mode" id="modeBtn">Chế độ: Con số (5, 6, 7...)</button>
+    </div>
+
+    <div class="main-layout">
+        <!-- Stage mô phỏng mảng -->
+        <div class="stage">
+            <div class="guide-label label-west">▶ Activation A (Tây sang)</div>
+            <div class="guide-label label-north">▼ Psum In = 0 (Bắc rót xuống)</div>
+            <div class="guide-label label-south">Ngõ ra Nam ➔</div>
+
+            <!-- 4 Ô PE trung tâm -->
+            <div class="pe-grid">
+                <div class="pe-box">
+                    <div class="pe-title">PE (0,0)</div>
+                    <div class="pe-weight" id="w00_box">W=2</div>
+                    <div class="pe-calc" id="c00">-</div>
+                </div>
+                <div class="pe-box">
+                    <div class="pe-title">PE (0,1)</div>
+                    <div class="pe-weight" id="w01_box">W=3</div>
+                    <div class="pe-calc" id="c01">-</div>
+                </div>
+                <div class="pe-box">
+                    <div class="pe-title">PE (1,0)</div>
+                    <div class="pe-weight" id="w10_box">W=1</div>
+                    <div class="pe-calc" id="c10">-</div>
+                </div>
+                <div class="pe-box">
+                    <div class="pe-title">PE (1,1)</div>
+                    <div class="pe-weight" id="w11_box">W=4</div>
+                    <div class="pe-calc" id="c11">-</div>
+                </div>
+            </div>
+
+            <!-- Khay hứng ngõ ra tức thời phía Nam -->
+            <div class="output-tray">
+                <div class="tray-box">
+                    <div class="tray-title">psum_col0_out</div>
+                    <div class="tray-val" id="out0">-</div>
+                </div>
+                <div class="tray-box">
+                    <div class="tray-title">psum_col1_out</div>
+                    <div class="tray-val" id="out1">-</div>
+                </div>
+            </div>
+
+            <!-- Token Activation (A) -->
+            <div class="token token-act" id="t_a00">5</div>
+            <div class="token token-act" id="t_a10">7</div>
+            <div class="token token-act" id="t_a01">6</div>
+            <div class="token token-act" id="t_a11">8</div>
+
+            <!-- Token Psum -->
+            <div class="token token-psum" id="p_c0_0">0</div>
+            <div class="token token-psum" id="p_c1_0">0</div>
+        </div>
+
+        <!-- Bảng lưu trữ ma trận kết quả hoàn chỉnh -->
+        <div class="result-panel">
+            <div class="result-title">MA TRẬN KẾT QUẢ Y<br>(Output Buffer)</div>
+            <div class="result-grid">
+                <div class="res-box" id="box_y00">
+                    <div class="res-label">y00</div>
+                    <div class="res-val" id="val_y00">?</div>
+                </div>
+                <div class="res-box" id="box_y01">
+                    <div class="res-label">y01</div>
+                    <div class="res-val" id="val_y01">?</div>
+                </div>
+                <div class="res-box" id="box_y10">
+                    <div class="res-label">y10</div>
+                    <div class="res-val" id="val_y10">?</div>
+                </div>
+                <div class="res-box" id="box_y11">
+                    <div class="res-label">y11</div>
+                    <div class="res-val" id="val_y11">?</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="info-panel" id="infoText">
+        Chu kỳ T0: Pha Setup. Trọng số W = [2, 3; 1, 4] đã nạp cố định vào 4 PE. Luồng A xếp hàng ở phía Tây (Hàng 1 lùi 1 nhịp để lệch pha).
+    </div>
+
+    <script>
+        let cycle = 0;
+        let isNumberMode = true;
+        let timer = null;
+
+        const POS = {
+            W_QUEUE_1: 150,
+            W_QUEUE_2: 90,
+            W_QUEUE_3: 30,
+            PE_COL0: 245,
+            PE_COL1: 355,
+            W_EXIT_1: 470,
+            W_EXIT_2: 530,
+
+            N_TOP: 35,
+            PE_ROW0: 160,
+            PE_ROW1: 270,
+            SOUTH_TRAY: 418,
+            S_EXIT: 490
+        };
+
+        const steps = [
+            // T0: Ban đầu
+            {
+                text: "Chu kỳ T0: Nạp trọng số cố định vào 4 PE. Hàng 1 (6, 8) được làm trễ 1 nhịp so với hàng 0 (5, 7). Ma trận Y đang rỗng.",
+                tokens: {
+                    t_a00: { x: POS.W_QUEUE_1, y: POS.PE_ROW0, show: true },
+                    t_a10: { x: POS.W_QUEUE_2, y: POS.PE_ROW0, show: true },
+                    t_a01: { x: POS.W_QUEUE_2, y: POS.PE_ROW1, show: true },
+                    t_a11: { x: POS.W_QUEUE_3, y: POS.PE_ROW1, show: true },
+                    p_c0_0: { x: POS.PE_COL0, y: POS.N_TOP, text: "0", show: true },
+                    p_c1_0: { x: POS.PE_COL1, y: POS.N_TOP, text: "0", show: true }
+                },
+                calc: { c00: "-", c01: "-", c10: "-", c11: "-" },
+                out: { out0: "-", out1: "-" },
+                buffer: { y00: "?", y01: "?", y10: "?", y11: "?" },
+                activeBox: []
+            },
+
+            // T1: a00=5 vào PE(0,0)
+            {
+                text: "Chu kỳ T1: a00 = 5 vào PE(0,0) gặp W=2. PE(0,0) tính: 5 * 2 = 10. Chốt Psum=10 xuống Nam, chốt a00 sang Đông.",
+                tokens: {
+                    t_a00: { x: POS.PE_COL0, y: POS.PE_ROW0, show: true },
+                    t_a10: { x: POS.W_QUEUE_1, y: POS.PE_ROW0, show: true },
+                    t_a01: { x: POS.W_QUEUE_1, y: POS.PE_ROW1, show: true },
+                    t_a11: { x: POS.W_QUEUE_2, y: POS.PE_ROW1, show: true },
+                    p_c0_0: { x: POS.PE_COL0, y: POS.PE_ROW0, text: "10", show: true },
+                    p_c1_0: { x: POS.PE_COL1, y: POS.N_TOP, text: "0", show: true }
+                },
+                calc: { c00: "5 x 2 = 10", c01: "-", c10: "-", c11: "-" },
+                out: { out0: "-", out1: "-" },
+                buffer: { y00: "?", y01: "?", y10: "?", y11: "?" },
+                activeBox: []
+            },
+
+            // T2: Lan truyền sang PE01, PE10
+            {
+                text: "Chu kỳ T2: a00 sang PE(0,1) tính 5*3=15. PE(1,0) nhận a01=6 và Psum=10 từ Bắc: 10 + (6*1) = 16. PE(0,0) nhận a10=7 tính 7*2=14.",
+                tokens: {
+                    t_a00: { x: POS.PE_COL1, y: POS.PE_ROW0, show: true },
+                    t_a10: { x: POS.PE_COL0, y: POS.PE_ROW0, show: true },
+                    t_a01: { x: POS.PE_COL0, y: POS.PE_ROW1, show: true },
+                    t_a11: { x: POS.W_QUEUE_1, y: POS.PE_ROW1, show: true },
+                    p_c0_0: { x: POS.PE_COL0, y: POS.PE_ROW1, text: "16", show: true },
+                    p_c1_0: { x: POS.PE_COL1, y: POS.PE_ROW0, text: "15", show: true }
+                },
+                calc: { c00: "7 x 2 = 14", c01: "5 x 3 = 15", c10: "10 + 6x1 = 16", c11: "-" },
+                out: { out0: "-", out1: "-" },
+                buffer: { y00: "?", y01: "?", y10: "?", y11: "?" },
+                activeBox: []
+            },
+
+            // T3: Y00 = 16 rơi xuống khay và chốt vào ma trận!
+            {
+                text: "Chu kỳ T3: <span class='hl-green'>y00 = 16 rơi xuống cổng Nam Cột 0 và được chốt vào ô (0,0) của ma trận Y!</span> PE(1,1) tính 15 + (6*4) = 39. PE(1,0) tính 14 + (8*1) = 22.",
+                tokens: {
+                    t_a00: { x: POS.W_EXIT_1, y: POS.PE_ROW0, show: false },
+                    t_a10: { x: POS.PE_COL1, y: POS.PE_ROW0, show: true },
+                    t_a01: { x: POS.PE_COL1, y: POS.PE_ROW1, show: true },
+                    t_a11: { x: POS.PE_COL0, y: POS.PE_ROW1, show: true },
+                    p_c0_0: { x: POS.PE_COL0, y: POS.SOUTH_TRAY, text: "16", show: false },
+                    p_c1_0: { x: POS.PE_COL1, y: POS.PE_ROW1, text: "39", show: true }
+                },
+                calc: { c00: "-", c01: "7 x 3 = 21", c10: "14 + 8x1 = 22", c11: "15 + 6x4 = 39" },
+                out: { out0: "16", out1: "-" },
+                buffer: { y00: "16", y01: "?", y10: "?", y11: "?" },
+                activeBox: ["box_y00"]
+            },
+
+            // T4: Y10 = 22 và Y01 = 39 chốt vào ma trận!
+            {
+                text: "Chu kỳ T4: <span class='hl-green'>y10 = 22 và y01 = 39 đồng thời xuất hiện ở 2 cổng Nam và chốt vào ma trận Y!</span> PE(1,1) tính nốt 21 + (8*4) = 53.",
+                tokens: {
+                    t_a00: { x: POS.W_EXIT_2, y: POS.PE_ROW0, show: false },
+                    t_a10: { x: POS.W_EXIT_1, y: POS.PE_ROW0, show: false },
+                    t_a01: { x: POS.W_EXIT_1, y: POS.PE_ROW1, show: false },
+                    t_a11: { x: POS.PE_COL1, y: POS.PE_ROW1, show: true },
+                    p_c0_0: { x: POS.PE_COL0, y: POS.SOUTH_TRAY, text: "22", show: false },
+                    p_c1_0: { x: POS.PE_COL1, y: POS.SOUTH_TRAY, text: "39", show: false }
+                },
+                calc: { c00: "-", c01: "-", c10: "-", c11: "21 + 8x4 = 53" },
+                out: { out0: "22", out1: "39" },
+                buffer: { y00: "16", y01: "39", y10: "22", y11: "?" },
+                activeBox: ["box_y00", "box_y01", "box_y10"]
+            },
+
+            // T5: Y11 = 53 chốt vào ma trận - Đủ cả 4 phần tử!
+            {
+                text: "Chu kỳ T5: <span class='hl-green'>y11 = 53 rơi xuống cổng Nam Cột 1 và chốt vào ô cuối cùng!</span> Toàn bộ ma trận kết quả Y = [[16, 39], [22, 53]] đã hoàn tất đầy đủ.",
+                tokens: {
+                    t_a00: { x: POS.W_EXIT_2, y: POS.PE_ROW0, show: false },
+                    t_a10: { x: POS.W_EXIT_2, y: POS.PE_ROW0, show: false },
+                    t_a01: { x: POS.W_EXIT_2, y: POS.PE_ROW1, show: false },
+                    t_a11: { x: POS.W_EXIT_1, y: POS.PE_ROW1, show: false },
+                    p_c0_0: { x: POS.PE_COL0, y: POS.S_EXIT, text: "", show: false },
+                    p_c1_0: { x: POS.PE_COL1, y: POS.SOUTH_TRAY, text: "53", show: false }
+                },
+                calc: { c00: "-", c01: "-", c10: "-", c11: "-" },
+                out: { out0: "0", out1: "53" },
+                buffer: { y00: "16", y01: "39", y10: "22", y11: "53" },
+                activeBox: ["box_y00", "box_y01", "box_y10", "box_y11"]
+            }
+        ];
+
+        const charLabels = {
+            t_a00: "a00", t_a10: "a10", t_a01: "a01", t_a11: "a11",
+            w00: "W00", w01: "W01", w10: "W10", w11: "W11"
+        };
+        const numLabels = {
+            t_a00: "5", t_a10: "7", t_a01: "6", t_a11: "8",
+            w00: "2", w01: "3", w10: "1", w11: "4"
+        };
+
+        function applyStep(idx) {
+            const cur = steps[idx];
+            document.getElementById('infoText').innerHTML = cur.text;
+
+            for (let id in cur.tokens) {
+                const el = document.getElementById(id);
+                const info = cur.tokens[id];
+                el.style.left = info.x + 'px';
+                el.style.top = info.y + 'px';
+                el.style.opacity = info.show ? "1" : "0";
+                if (info.text !== undefined) el.innerText = info.text;
+            }
+
+            for (let id in cur.calc) {
+                document.getElementById(id).innerText = cur.calc[id];
+            }
+
+            document.getElementById('out0').innerText = cur.out.out0;
+            document.getElementById('out1').innerText = cur.out.out1;
+
+            document.getElementById('val_y00').innerText = cur.buffer.y00;
+            document.getElementById('val_y01').innerText = cur.buffer.y01;
+            document.getElementById('val_y10').innerText = cur.buffer.y10;
+            document.getElementById('val_y11').innerText = cur.buffer.y11;
+
+            ['box_y00', 'box_y01', 'box_y10', 'box_y11'].forEach(id => {
+                const el = document.getElementById(id);
+                if (cur.activeBox.includes(id)) {
+                    el.classList.add('active');
+                } else {
+                    el.classList.remove('active');
+                }
+            });
+        }
+
+        function stepForward() {
+            if (timer) toggleAuto();
+            if (cycle < steps.length - 1) {
+                cycle++;
+                applyStep(cycle);
+            }
+        }
+
+        function stepBackward() {
+            if (timer) toggleAuto();
+            if (cycle > 0) {
+                cycle--;
+                applyStep(cycle);
+            }
+        }
+
+        function resetSim() {
+            if (timer) toggleAuto();
+            cycle = 0;
+            applyStep(0);
+        }
+
+        function toggleAuto() {
+            const btn = document.getElementById('playBtn');
+            if (timer) {
+                clearInterval(timer);
+                timer = null;
+                btn.innerText = "Tự động chạy (Play)";
+            } else {
+                btn.innerText = "Tạm dừng (Pause)";
+                timer = setInterval(() => {
+                    if (cycle < steps.length - 1) {
+                        cycle++;
+                        applyStep(cycle);
+                    } else {
+                        cycle = 0;
+                        applyStep(0);
+                    }
+                }, 1600);
+            }
+        }
+
+        function toggleMode() {
+            isNumberMode = !isNumberMode;
+            const btn = document.getElementById('modeBtn');
+            const map = isNumberMode ? numLabels : charLabels;
+
+            btn.innerText = isNumberMode ? "Chế độ: Con số (5, 6, 7...)" : "Chế độ: Biến số (a, W...)";
+            document.getElementById('t_a00').innerText = map.t_a00;
+            document.getElementById('t_a10').innerText = map.t_a10;
+            document.getElementById('t_a01').innerText = map.t_a01;
+            document.getElementById('t_a11').innerText = map.t_a11;
+
+            document.getElementById('w00_box').innerText = "W=" + map.w00;
+            document.getElementById('w01_box').innerText = "W=" + map.w01;
+            document.getElementById('w10_box').innerText = "W=" + map.w10;
+            document.getElementById('w11_box').innerText = "W=" + map.w11;
+        }
+
+        applyStep(0);
+    </script>
+</body>
+</html>

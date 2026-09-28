@@ -1,0 +1,45 @@
+=======================================================
+             SYSTOLIC ARRAY 2x2 - FINAL SIGNOFF REPORT
+=======================================================
+Design Name       : systolic_array_2x2
+Run Tag           : run_fix_antenna
+Process Node      : SkyWater 130nm (sky130_fd_sc_hd)
+Die Dimensions    : 420.44 um x 418.88 um
+
+[1] TIMING & PERFORMANCE
+-------------------------------------------------------
+Target Clock Period    : 10.0 ns (100.00 MHz)
+Suggested Clock Period : 10.0 ns
+Suggested Frequency    : 100.0 MHz
+Worst Negative Slack   : 0.0 ns (MET)
+Total Negative Slack   : 0.0 ns (MET)
+Setup Violations       : 0 (MET)
+Hold Violations        : 0 (MET)
+
+[2] AREA & UTILIZATION
+-------------------------------------------------------
+Total Physical Cells   : 30794
+Core Area              : 176113.9072 um^2
+Die Area               : 0.190883464625 mm^2
+Core Utilization       : 45%
+Placement Density      : 0.50
+
+[3] PHYSICAL VERIFICATION (SIGNOFF)
+-------------------------------------------------------
+Magic DRC Violations   : 0 (Clean)
+LVS Status             : Clean (8558 / 8558 nets matched)
+Antenna Pin Violations : 0 (Clean)
+Antenna Net Violations : 0 (Clean)
+
+[4] POWER DISSIPATION (Typical Corner)
+-------------------------------------------------------
+Internal Power         : 0.0103 uW
+Switching Power        : 0.0116 uW
+Leakage Power          : 4.91e-08 uW
+
+[5] FIXES APPLIED (VS BASELINE)
+-------------------------------------------------------
+Diode Strategy         : Strategy 4 (Heuristic Diode Insertion)
+Port Protection        : DIODE_ON_PORTS = in
+Result Status          : TAPE-OUT READY (DRC/LVS/Antenna/Timing MET)
+=======================================================

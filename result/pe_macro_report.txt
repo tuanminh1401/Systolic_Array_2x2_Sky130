@@ -1,0 +1,37 @@
+================================================================================
+PHYSICAL DESIGN SIGN-OFF REPORT: PROCESSING ELEMENT (PE MACRO)
+================================================================================
+Design Name      : processing_element
+PDK Target       : SkyWater 130nm (sky130_fd_sc_hd)
+Run Tag          : run_pe_macro
+Sign-off Status  : PASSED (TAPE-OUT READY)
+================================================================================
+
+1. PHYSICAL DIMENSIONS & FLOORPLAN
+--------------------------------------------------------------------------------
+- Die Width        : 226.235 um
+- Die Height       : 236.955 um
+- Total Macro Area : 53607.51 um^2 (~0.05361 mm^2)
+- Routing Layers   : Metal 1 -> Metal 4 (Metal 5 reserved for Top)
+- Pin Interface    :
+    * North (#N)   : psum_in[31:0]
+    * South (#S)   : psum_out[31:0]
+    * West  (#W)   : clk, rst_n, load_weight, valid_in, weight_in[15:0], act_in[15:0]
+    * East  (#E)   : valid_out, act_out[15:0]
+
+2. SIGN-OFF TIMING & VERIFICATION
+--------------------------------------------------------------------------------
+- Clock Period     : 10.00 ns (100.00 MHz)
+- Setup Slack      : MET (0 violations)
+- Hold Slack       : MET (0 violations)
+- Magic DRC        : CLEAN (0 violations)
+- Netlist LVS      : CLEAN (Matched)
+- KLayout XOR      : CLEAN (0 differences)
+
+3. EXPORTED ARTIFACTS
+--------------------------------------------------------------------------------
+- LEF File         : results/final/lef/processing_element.lef
+- GDSII Layout     : results/final/gds/processing_element.gds
+- Liberty (.lib)   : results/final/lib/processing_element__typical.lib
+- Powered Netlist  : results/final/verilog/gl/processing_element.powered.v
+================================================================================

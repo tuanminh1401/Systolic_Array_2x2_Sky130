@@ -1,0 +1,71 @@
+================================================================================
+           BÁO CÁO NGHIỆM THU VẬT LÝ VÀ ĐÓNG GÓI TẦNG ĐỈNH (SIGN-OFF REPORT)
+                    DỰ ÁN: 2x2 SYSTOLIC ARRAY HARD MACRO INTEGRATION
+================================================================================
+
+1. TỔNG QUAN THIẾT KẾ VÀ BỐ TRÍ MẶT BẰNG (DESIGN & FLOORPLAN OVERVIEW)
+--------------------------------------------------------------------------------
+- Tên thiết kế tầng đỉnh (Top Module)   : systolic_array_2x2
+- Tiến trình công nghệ (Process PDK)    : SkyWater 130nm (sky130A - 1P5M CMOS)
+- Thư viện ô chuẩn (Standard Cell Lib)  : sky130_fd_sc_hd (High Density)
+- Phương pháp luận (PnR Methodology)    : Hierarchical Physical Design
+- Cấu trúc phân cấp (Hierarchy)         : 4x Hard Macros (Processing Element - PE)
+- Kích thước khuôn chip (Die Dimension) : 650 um x 650 um
+- Diện tích khuôn chip (Die Area)       : 0.4225 mm2
+- Tọa độ vùng lõi (Core Coordinates)    : [15 um, 15 um] -> [635 um, 635 um] (620 x 620 um)
+- Kích thước mỗi khối Hard Macro PE     : 240 um x 240 um
+- Kênh đi dây chữ thập trung tâm        : GapX ~ 53.7 um, GapY ~ 53.0 um
+- Phân bổ chân giao tiếp (Pin Order)    : 4 cạnh viền (phân chia Bus nạp Trọng số, Data, Psum)
+
+2. ĐÁNH GIÁ THỜI GIAN VÀ HIỆU NĂNG TẦNG TOP (TIMING & CLOCK ANALYSIS)
+--------------------------------------------------------------------------------
+- Chu kỳ xung nhịp mục tiêu (Clock)     : 10.00 ns (Tần số danh định 100.00 MHz)
+- Trễ thiết lập xấu nhất (Setup WNS)    : 0.0 ns (0 Setup Violations - ĐẠT CHỈ TIÊU)
+- Trễ giữ xấu nhất (Hold WHS)           : 0.00 ns (0 Hold Violations - ĐẠT CHỈ TIÊU)
+- Vi phạm sườn xung (Max Slew)          : 0 vi phạm
+- Vi phạm tải phân nhánh (Max Fanout)   : 0 vi phạm
+- Vi phạm điện dung (Max Capacitance)   : 0 vi phạm
+- Trạng thái phân tích góc (Corners)    : Clean toàn diện ở mọi góc Typical, Nom_Slow, Nom_Fast
+
+3. KIỂM TRA QUY TẮC VẬT LÝ VÀ CHẾ TẠO (PHYSICAL VERIFICATION & SIGN-OFF)
+--------------------------------------------------------------------------------
+- Kiểm tra quy tắc hình học (Magic DRC) : 0 lỗi vi phạm (Clean sau GDS stream-out)
+- So sánh Netlist và Layout (KLayout LVS): 0 lỗi (Khớp 1:1 mạch nguyên lý với layout)
+- Trùng khớp mặt nạ (XOR Differences)   : 0 khác biệt giữa Magic và KLayout GDSII
+- Hiệu ứng ăng-ten (Antenna Check)      : Pass (0 chân vi phạm - Diode Strategy 4)
+- Mạng phân phối nguồn (PDN Ring/Straps): Đã liên kết hoàn chỉnh Power Ring Top và PE Macro
+
+4. THỐNG KÊ Ô CẤU THÀNH VÀ MẬT ĐỘ (AREA & CELL UTILIZATION)
+--------------------------------------------------------------------------------
+- Số lượng khối Macro cứng tích hợp     : 4 PE Hard Macros (u_pe00, u_pe01, u_pe10, u_pe11)
+- Tổng số cell ở tầng đỉnh              : 14292 cells
+  + Ô tụ bù ổn định điện áp (DecapCells): Đã chèn phủ toàn bộ vùng trống
+  + Ô tiếp giáp đế bán dẫn (Welltaps)   : Đã chèn định kỳ theo tiêu chuẩn Sky130
+  + Ô đệm tín hiệu bus (Buffers/Invs)   : Tối ưu hóa trên các bus dài 16-bit và 32-bit
+  + Ô lấp đầy mật độ silicon (FillCells): Phủ kín bề mặt đáp ứng yêu cầu đúc wafer
+
+5. MÔ HÌNH TIÊU THỤ CÔNG SUẤT (POWER ESTIMATION)
+--------------------------------------------------------------------------------
+- Điện áp hoạt động danh định           : 1.80 V (VDD)
+- Công suất nội tại tầng Top (Internal) : 0.00 uW
+- Công suất chuyển mạch Top (Switching) : 0.00 uW
+- Công suất rò rỉ tầng Top (Leakage)    : 0.00 uW
+- Tổng công suất ước lượng toàn mảng    : P_Total ~ 4 * P_PE_Macro + P_Top_Buffers
+- Đánh giá sụt áp tĩnh (Static IR Drop) : Đáp ứng tiêu chuẩn lưới nguồn SkyWater 130nm
+
+6. CÁC TẬP TIN XUẤT XƯỞNG BÀN GIAO (KEY DELIVERABLES)
+--------------------------------------------------------------------------------
+- Layout GDSII hoàn chỉnh               : results/final/gds/systolic_array_2x2.gds
+- Abstract LEF tầng Top                 : results/final/lef/systolic_array_2x2.lef
+- Netlist cổng logic sau PnR            : results/final/verilog/gl/systolic_array_2x2.v
+- Netlist đầy đủ chân nguồn             : results/final/verilog/gl/systolic_array_2x2.powered.v
+- Bảng thông số đo kiểm định lượng      : reports/metrics.csv
+- Bản vẽ cấu hình lớp hiển thị          : sky130A.lyp
+
+================================================================================
+KẾT LUẬN:
+Thiết kế mảng Systolic Array 2x2 trên tiến trình SkyWater 130nm đã vượt qua toàn
+bộ các bước kiểm tra chất lượng ký duyệt (Sign-off) với kết quả hoàn hảo:
+0 DRC, 0 LVS, 0 Timing Violations ở tần số 100 MHz. Sẵn sàng tích hợp vào Caravel
+Harness để tiến hành Tape-out thương mại.
+================================================================================

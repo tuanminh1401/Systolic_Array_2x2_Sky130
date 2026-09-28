@@ -1,0 +1,20 @@
+# Simulation artifacts (ModelSim / QuestaSim / Icarus)
+work/
+wcb/
+*.wlf
+*.vcd
+*.saif
+transcript
+vsim.wlf
+
+# OpenLane run artifacts & logs (không push cả thư mục runs)
+runs/
+*.log
+*.rpt.old
+
+# OS & Editor temp files
+.DS_Store
+Thumbs.db
+*.swp
+*~
+.vscode/

@@ -1,0 +1,33 @@
+{
+  "DESIGN_NAME": "systolic_array_2x2",
+  "VERILOG_FILES": [
+    "dir::rtl/systolic_array_2x2.sv"
+  ],
+  "VERILOG_FILES_BLACKBOX": [
+    "dir::rtl/processing_element_bb.sv"
+  ],
+  "CLOCK_PORT": "clk",
+  "CLOCK_PERIOD": 10.0,
+
+  "FP_PIN_ORDER_CFG": "dir::pin_order.cfg",
+
+  "EXTRA_LEFS": [
+    "dir::../processing_element/runs/run_pe_macro/results/final/lef/processing_element.lef"
+  ],
+  "EXTRA_GDS_FILES": [
+    "dir::../processing_element/runs/run_pe_macro/results/final/gds/processing_element.gds"
+  ],
+  "EXTRA_LIBS": [
+    "dir::../processing_element/runs/run_pe_macro/results/final/lib/processing_element.lib"
+  ],
+  "MACRO_PLACEMENT_CFG": "dir::macro_placement.cfg",
+
+  "FP_SIZING": "absolute",
+  "DIE_AREA": "0 0 650 650",
+  "CORE_AREA": "15 15 635 635",
+
+  "PL_TARGET_DENSITY": 0.35,
+  "RUN_HEURISTIC_DIODE_INSERTION": 1,
+  "DIODE_INSERTION_STRATEGY": 4,
+  "DIODE_ON_PORTS": "in"
+}
