@@ -8,26 +8,22 @@ Hierarchical ASIC Implementation and Sign-off of a 2x2 Systolic Array architectu
 
 <div align="center">
   <table width="100%">
-    <thead>
-      <tr>
-        <th align="center" width="50%">Processing Element (Hard Macro)</th>
-        <th align="center" width="50%">2x2 Systolic Array (Top Level)</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td align="center" valign="middle" width="50%">
-          <img src="images/layout_macro.png" alt="PE Macro Layout" width="96%" />
-        </td>
-        <td align="center" valign="middle" width="50%">
-          <img src="images/layout_top.png" alt="Top Level Layout" width="96%" />
-        </td>
-      </tr>
-      <tr>
-        <td align="center"><b>PE Hard Macro</b> (240 &times; 240 &mu;m)</td>
-        <td align="center"><b>Top-Level Array</b> (650 &times; 650 &mu;m)</td>
-      </tr>
-    </tbody>
+    <tr>
+      <th align="center" width="50%">Processing Element (Hard Macro)</th>
+      <th align="center" width="50%">2x2 Systolic Array (Top Level)</th>
+    </tr>
+    <tr>
+      <td align="center" valign="middle">
+        <a href="images/layout_macro.png"><img src="images/layout_macro.png" alt="PE Macro Layout" width="92%" /></a>
+      </td>
+      <td align="center" valign="middle">
+        <a href="images/layout_top.png"><img src="images/layout_top.png?v=2" alt="Top Level Layout" width="92%" /></a>
+      </td>
+    </tr>
+    <tr>
+      <td align="center"><b>PE Hard Macro</b> (240 &times; 240 &mu;m)</td>
+      <td align="center"><b>Top-Level Array</b> (650 &times; 650 &mu;m)</td>
+    </tr>
   </table>
 </div>
 
